@@ -18,7 +18,6 @@ public class Main {
 
     public static void main(String[] args) {
         System.out.println("\t jBCrypt生成校验工具");
-        System.out.format("\33[32;4m我是博主%n");//%n表示换行
         selectOperation();
     }
 
