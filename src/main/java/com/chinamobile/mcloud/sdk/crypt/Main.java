@@ -17,18 +17,29 @@ public class Main {
     private static final String TEXT_RED = "\u001B[31m";
 
     public static void main(String[] args) {
-        int choice;
         System.out.println("\t jBCrypt生成校验工具");
-        System.out.println("—————————————— 操作选项 ——————————————");
+        System.out.format("\33[32;4m我是博主%n");//%n表示换行
+        selectOperation();
+    }
+
+
+    private static void selectOperation(){
+        System.out.println("-------------- 操作选项 --------------");
         System.out.println("0.  生成哈希值");
         System.out.println("1.  校验哈希值");
         System.out.print("请输入数字：");
         Scanner scChoice = new Scanner(System.in);
         try {
+            int choice;
             choice = scChoice.nextInt();
-            readFile(choice);
+            if (choice == CHOICE_GENERATE || choice == CHOICE_VERIFY) {
+                readFile(choice);
+            } else {
+                throw new IllegalArgumentException();
+            }
         } catch (Exception e) {
             System.out.println("请输入正确的选择数字");
+            selectOperation();
         }
     }
 
@@ -48,7 +59,7 @@ public class Main {
         try {
             File file = new File(path);
             if (file.exists()) {
-                System.out.println("正在读取文件...");
+                System.out.println("读取文件...");
                 StringBuilder sb = new StringBuilder();
                 fis = new FileInputStream(file); // 内容是：abc
                 int temp;
@@ -60,11 +71,13 @@ public class Main {
 //                long fileSize = contentStr.length();
 //                System.out.println("读取大小:" + fileSize);
                 if (choice == CHOICE_GENERATE) {
+                    System.out.println("正在生成...");
                     hashed = BCrypt.hashpw(contentStr, BCrypt.gensalt(12));
                     System.out.println("hashed值：\n");
                     System.out.println(hashed + "\n");
                 } else if (choice == CHOICE_VERIFY) {
                     try {
+                        System.out.println("正在校验...");
                         boolean result = BCrypt.checkpw(contentStr, hashed);
                         if (result) {
                             System.out.println(TEXT_GREEN + "[OK] " + BG_GREEN + TEXT_WHITE + "校验通过");
@@ -73,7 +86,8 @@ public class Main {
                             System.out.println(TEXT_RED + "[FAILED] " + BG_RED + TEXT_WHITE + "校验失败，文件可能被篡改！");
                         }
                     } catch (IllegalArgumentException e) {
-                        System.out.println("请输入正确的hashed值");
+                        System.out.println(TEXT_RED + "[FAILED] " + BG_RED + TEXT_WHITE + "请输入正确的hashed值！");
+                        readFile(choice);
                     }
                 } else {
                     System.out.println("无效选项");
