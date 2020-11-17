@@ -22,7 +22,7 @@ public class Main {
     }
 
 
-    private static void selectOperation(){
+    private static void selectOperation() {
         System.out.println("-------------- 操作选项 --------------");
         System.out.println("0.  生成哈希值");
         System.out.println("1.  校验哈希值");
@@ -79,13 +79,24 @@ public class Main {
                         System.out.println("正在校验...");
                         boolean result = BCrypt.checkpw(contentStr, hashed);
                         if (result) {
-                            System.out.println(TEXT_GREEN + "[OK] " + BG_GREEN + TEXT_WHITE + "校验通过");
+                            if (isWindows()) {
+                                System.out.println("[OK] 校验通过");
+                            } else {
+                                System.out.println(TEXT_GREEN + "[OK] " + BG_GREEN + TEXT_WHITE + "校验通过");
+                            }
                         } else {
-//                        System.out.println("[FAILED]  校验失败，文件可能被篡改！");
-                            System.out.println(TEXT_RED + "[FAILED] " + BG_RED + TEXT_WHITE + "校验失败，文件可能被篡改！");
+                            if (isWindows()) {
+                                System.out.println("[FAILED]  校验失败，文件可能被篡改！");
+                            } else {
+                                System.out.println(TEXT_RED + "[FAILED] " + BG_RED + TEXT_WHITE + "校验失败，文件可能被篡改！");
+                            }
                         }
                     } catch (IllegalArgumentException e) {
-                        System.out.println(TEXT_RED + "[FAILED] " + BG_RED + TEXT_WHITE + "请输入正确的hashed值！");
+                        if (isWindows()) {
+                            System.out.println("[FAILED] 请输入正确的hashed值！");
+                        } else {
+                            System.out.println(TEXT_RED + "[FAILED] " + BG_RED + TEXT_WHITE + "请输入正确的hashed值！");
+                        }
                         readFile(choice);
                     }
                 } else {
@@ -106,5 +117,11 @@ public class Main {
                 }
             }
         }
+    }
+
+    private static boolean isWindows() {
+        String os = System.getProperty("os.name").toLowerCase();
+        //windows
+        return (os.indexOf("win") >= 0);
     }
 }
